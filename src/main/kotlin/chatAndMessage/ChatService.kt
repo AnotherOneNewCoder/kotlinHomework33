@@ -1,77 +1,140 @@
 package chatAndMessage
 
-import examples.Post
+import examples.swap
+
 
 object ChatService {
 
-    val chatsList = mutableListOf<DirectMessages>()
-    var idChat = 0
+    private val chats = mutableMapOf<Int, DirectMessages>()
+    var user_id = 0
     var idMessages = 0
+    class NoSuchChatException : Exception()
 
-    fun createChat(chatId:Int,message: Message): Boolean {
-        //val predicate = fun (direct: DirectMessages) = direct.id != chatId
-        for (chat in chatsList){
-            if (chat.id == chatId)
-                return false
-        }
-        val tempList = mutableListOf<Message>()
-        message.id = ++idMessages
-        tempList.add(message)
+    fun add(userId: Int, message: Message) {
+        val newMess = message.copy(messageId = ++idMessages)
+        chats.getOrPut(userId) {DirectMessages() }.messeges.add(newMess)
+    }
 
-        chatsList.add(DirectMessages(chatId, tempList))
-        return true
+    fun getChatsList(): List<String> =
+        chats.values.map { it.messeges.lastOrNull{ message -> !message.deleted }?.text ?: "No messages"}
+
+    fun getChatMessages(userId: Int, count: Int): List<Message> {
+        val chat = chats[userId] ?: throw NoSuchChatException()
+        return chat.messeges.filter { !it.deleted }.takeLast(count)
     }
-    fun getChats(): String {
-        return chatsList.toString()
+    fun deleteChat(userId: Int): DirectMessages? {
+        if(chats[userId] == null)
+            throw NoSuchChatException()
+        else
+            return chats.remove(userId)
     }
-    fun deleteAllChats(): MutableList<DirectMessages>{
-        chatsList.removeAll { it.id > 0 }
-        return chatsList
-    }
-    fun deleteChat(chatId: Int) : MutableList<DirectMessages> {
-        chatsList.removeAll { it.id == chatId }
-        return chatsList
-    }
-    fun newMessage(chatId: Int, message: Message):Boolean {
-        for (chat in chatsList) {
-            if (chat.id == chatId) {
-                message.id = ++idMessages
-                chat.mutableList.add(message)
-                return true
-            }
-        }
-        createChat(chatId, message)
-        return true
-    }
-    fun editMessage(messageId: Int, editMessage: Message): Boolean{
-        for (chat in chatsList) {
-            for ((index,message) in chat.mutableList.withIndex()){
-                if (message.id == messageId) {
-                    val newMessage = editMessage.copy(id = message.id)
-                    chat.mutableList.set(index, newMessage)
+
+    fun editMessage(editMessageId: Int, editMessage: Message): Boolean {
+        chats.values.map {
+            it.messeges.forEach { message ->
+                if (message.messageId == editMessageId) {
+                    val newM = editMessage.copy(messageId = editMessageId)
+                    //message.copy(text = newM.text, deleted = newM.deleted, messageId = newM.messageId)
+                    // не знаю почему copy() не срабатывает, помогло только изменение с val на var в дата классе Messages
+                    message.text = newM.text
                     return true
-
                 }
             }
+
         }
+        println("Сообщения с таким ID не найдено!!")
         return false
     }
     fun displayAllMessages(){
-        for (chat in chatsList){
-            for (message in chat.mutableList){
-                println(message)
-            }
+        for ((key, value) in chats) {
+            print(" $key = $value ")
+        }
+        println()
         }
     }
-    fun deleteMessage(messageId: Int){
-        for (chat in chatsList){
-            chat.mutableList.removeAll { it.id ==messageId }
-        }
-        //chatsList.removeAll { it.mutableList.removeAll { it.id == messageId } }
-    }
+//    fun deleteMessage(messageId: Int): Boolean{
+//        return chats.values.map { it.messeges.removeIf{it.messageId == messageId} }
+//    }
+/*    fun createChat(login: String,message: Message): Boolean {
+//        //val predicate = fun (direct: DirectMessages) = direct.id != chatId
+//        for (chat in chatsList){
+//            if (chat.userLogin == login)
+//                return false
+//        }
+//        val tempList = mutableListOf<Message>()
+//        message.id = ++idMessages
+//        tempList.add(message)
+//
+//        chatsList.add(DirectMessages(++user_id, login ,tempList))
+//        return true
+//    }
+//    fun getChats(): String {
+//        return chatsList.toString()
+//    }
+//    fun deleteAllChats(): MutableList<DirectMessages>{
+//        chatsList.removeAll { it.userId > 0 }
+//        return chatsList
+//    }
+//    fun deleteChat(uId: Int) : MutableList<DirectMessages> {
+//        chatsList.removeAll { it.userId == uId }
+//        return chatsList */
+//    }
+/*    fun newMessage(uId: Int, message: Message):Boolean {
+//        for (chat in chatsList) {
+//            if (chat.userId == uId) {
+//                message.id = ++idMessages
+//                chat.mutableList.add(message)
+//                return true
+//            }
+//        }
+//        message.id = ++idMessages
+//        createChat("Waiting for authorization", message)
+//        return true
+    }*/
+//    fun editMessage(messageId: Int, editMessage: Message): Boolean{
+//        for (chat in chatsList) {
+//            for ((index,message) in chat.mutableList.withIndex()){
+//                if (message.id == messageId) {
+//                    editMessage.id = message.id
+//                    chat.mutableList.set(index, editMessage)
+//                    return true
+//
+//                }
+//            }
+//        }
+//        return false
+//    }
+//    fun displayAllMessages(){
+//        for (chat in chatsList){
+//            for (message in chat.mutableList){
+//                println(message)
+//            }
+//        }
+//    }
+//    fun deleteMessage(messageId: Int){
+//        for (chat in chatsList){
+//            chat.mutableList.removeAll { it.id ==messageId }
+//        }
+//        //chatsList.removeAll { it.mutableList.removeAll { it.id == messageId } }
+//    }
+//    fun getUnreadChatsCount() : List<DirectMessages>{
+//        val unreadChats = mutableListOf<DirectMessages>()
+//        for (chat in chatsList) {
+//            for (message in chat.mutableList)
+//                if (message.read == false)
+//                    if (!unreadChats.contains(chat))
+//                        unreadChats.add(chat)
+//        }
+////        val predicate = fun (direct: DirectMessages) = direct.mutableList.filter { it.recieved }
+////        val getChats = chatsList.filter(predicate)
+//        return unreadChats
+//    }
+//
 
-}
 
-//fun <E> MutableList<E>.contains(index: Int) {
-//    if (index == )
-//}
+
+//fun <E> MutableList<E>.count(index1: Int, index2: MutableList<T>) {
+//    val el1 = get(index1)
+//    val el2 = get(index2)
+//    this[index1] = el2
+//    this[index2] = el1
