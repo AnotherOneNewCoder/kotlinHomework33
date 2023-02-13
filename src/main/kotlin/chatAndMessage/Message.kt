@@ -2,10 +2,9 @@ package chatAndMessage
 
  data class Message  (
 
-//     var read: Boolean,
-//     var recieved: Boolean
      var text: String,
-     val deleted: Boolean = false,
+     var deleted: Boolean = false,
+     var read: Boolean = false,
      val messageId: Int = 0)
  {
 
@@ -13,6 +12,6 @@ package chatAndMessage
 
     override fun toString(): String {
 
-        return "Id: $messageId, text: $text, deleted: $deleted"
+        return "Id: $messageId, text: $text, read: $read, deleted: $deleted"
    }
 }

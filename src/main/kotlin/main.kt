@@ -49,11 +49,17 @@ fun main() {
     val mess1 = Message("first")
     val mess2 = Message("second", true)
     val mess3 = Message("third")
+    val mess4 = Message("fourth")
+    val mess5 = Message("five")
+    val mess6 = Message("six")
     val editMess = Message("edited")
     ChatService.add(1, mess1)
     ChatService.add(1, mess2)
     ChatService.add(2, mess2)
     ChatService.add(1, mess3)
+    ChatService.add(1, mess4)
+    ChatService.add(1, mess5)
+    ChatService.add(1, mess6)
     println(ChatService.getChatMessages(1, 3))
     println()
     println(ChatService.getChatMessages(2, 3))
@@ -63,9 +69,15 @@ fun main() {
     ChatService.deleteChat(2)
     println(ChatService.getChatsList())
     ChatService.displayAllMessages()
-    println(ChatService.editMessage(4, editMess))
+    println(ChatService.editMessage1(4, editMess))
     println()
     ChatService.displayAllMessages()
+    println(ChatService.deleteMessage(444))
+    ChatService.displayAllMessages()
+    println()
+    println(ChatService.getMessages(1, 0, 4))
+
+
 
 
 
