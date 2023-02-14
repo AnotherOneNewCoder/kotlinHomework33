@@ -8,8 +8,7 @@ object ChatService {
     private val chats = mutableMapOf<Int, DirectMessages>()
     var idMessages = 0
 
-    class NoSuchChatException : Exception()
-    class NoSuchMessageException : Exception()
+
 
     fun add(userId: Int, message: Message) {
         val newMess = message.copy(messageId = ++idMessages)
@@ -47,7 +46,7 @@ object ChatService {
 //        println("Сообщения с таким ID не найдено!!")
 //        return false
 //    }
-    fun editMessage1(editMessageId: Int, editMessage: Message): Boolean {
+    fun editMessage(editMessageId: Int, editMessage: Message): Boolean {
         chats.values.map {
             it.messeges.forEach {
                 if (it.messageId == editMessageId) {
@@ -102,6 +101,8 @@ object ChatService {
 
     }
 }
+class NoSuchChatException : Exception()
+class NoSuchMessageException : Exception()
 
 /*    fun createChat(login: String,message: Message): Boolean {
 //        //val predicate = fun (direct: DirectMessages) = direct.id != chatId

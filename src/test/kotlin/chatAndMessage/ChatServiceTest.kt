@@ -27,8 +27,21 @@ class ChatServiceTest {
     }
 
 
+    @Test(expected = NoSuchChatException::class)
+    fun getChatMessagesException() {
+        val service = ChatService
+        service.getChatMessages(22, 11)
+    }
     @Test
     fun getChatMessages() {
+        val service = ChatService
+        service.add(4, mess1)
+        service.add(4, mess2)
+        service.add(4, mess3)
+        service.add(4, mess4)
+        val result = service.getChatMessages(4, 4).toString()
+        val expected = "[Id: 3, text: first, read: false, deleted: false, Id: 5, text: third, read: true, deleted: false]"
+        assertEquals(expected, result)
     }
 
     @Test
