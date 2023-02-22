@@ -19,14 +19,14 @@ class ChatServiceTest {
         ChatService.deleteChat(1)
         ChatService.add(1, mess2)
         val result = ChatService.getChatsList().toString()
-        val expect = "[No messages, first, No messages]"
+        val expect = "[No messages, third, first, No messages]"
         assertEquals(expect,result)
     }
     @Test
     fun getChatsListNotDeleted() {
         ChatService.add(1, mess1)
         val result = ChatService.getChatsList().toString()
-        val expect = "[No messages, first, first]"
+        val expect = "[No messages, third, first, first]"
         assertEquals(expect,result)
     }
 
@@ -44,7 +44,7 @@ class ChatServiceTest {
         service.add(4, mess3)
         service.add(4, mess4)
         val result = service.getChatMessages(4, 4).toString()
-        val expected = "[Id: 11, text: first, read: false, deleted: false, Id: 13, text: third, read: true, deleted: false]"
+        val expected = "[Id: 15, text: first, read: false, deleted: false, Id: 17, text: third, read: true, deleted: false]"
         assertEquals(expected, result)
     }
 
@@ -59,7 +59,7 @@ class ChatServiceTest {
         service.add(15, mess1)
         service.deleteChat(15)
         val result = service.getChatsList().toString()
-        val expected = "[No messages, first, No messages, first]"
+        val expected = "[No messages, third, first, No messages, first]"
         assertEquals(expected, result)
     }
     @Test
@@ -109,7 +109,24 @@ class ChatServiceTest {
         service.add(32, mess4)
         service.add(32, mess1)
         val result = service.getMessages(32,1,5).toString()
-        val expected = "[Id: 7, text: third, read: true, deleted: false, Id: 9, text: first, read: true, deleted: false]"
+        val expected = "[Id: 11, text: third, read: true, deleted: false, Id: 13, text: first, read: true, deleted: false]"
+        assertEquals(expected, result)
+    }
+
+    @Test(expected = NoSuchChatException::class)
+    fun displayChatTextUnreadMessagesException() {
+        val service = ChatService
+        service.displayChatTextUnreadMessages(666,111)
+    }
+    @Test
+    fun displayChatTextUnreadMessages() {
+        val service = ChatService
+        service.add(14, mess1)
+        service.add(14, mess2)
+        service.add(14, mess3)
+        service.add(14, mess4)
+        val result = service.displayChatTextUnreadMessages(14,4)
+        val expected = "first"
         assertEquals(expected, result)
     }
 
